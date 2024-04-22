@@ -5,7 +5,8 @@ import { MessageType } from '@/api'
 
 export enum CronTaskMode {
   CUSTOM = 'custom',
-  NORMAL = 'normal'
+  NORMAL = 'normal',
+  PRESET = 'preset'
 }
 
 export interface CronTask {

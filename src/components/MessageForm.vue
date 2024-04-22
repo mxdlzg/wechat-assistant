@@ -8,7 +8,7 @@
   <el-form :model="form" :rules="rules" ref="ruleForm" label-position="left" label-width="120px">
     <!-- 文本消息 -->
     <el-form-item v-if="mode === 'text'" label="内容" prop="message">
-      <el-input type="textarea" placeholder="请输入消息内容" v-model="form.message" />
+      <el-input type="textarea" style="width: 300px;" autosize placeholder="请输入消息内容" v-model="form.message" />
     </el-form-item>
 
     <!-- 图片消息 -->

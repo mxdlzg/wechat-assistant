@@ -15,11 +15,25 @@
         <el-radio-group v-model="form.mode">
           <el-radio-button value="normal">普通模式</el-radio-button>
           <el-radio-button value="custom">自定义模式</el-radio-button>
+          <el-radio-button value="preset">预设模式</el-radio-button>
         </el-radio-group>
       </el-form-item>
       <!-- 执行模式 custom -->
       <el-form-item v-if="form.mode === 'custom'" label="cron表达式">
         <el-input v-model="form.cron" placeholder="请输入cron表达式"></el-input>
+        <p class="cron-desc">执行时间: {{ cronDesc }}</p>
+      </el-form-item>
+      <!-- 执行模式 preset -->
+      <el-form-item v-else-if="form.mode === 'preset'" label="预设模式">
+        <el-radio-group v-model="preset" size="small" @change="handlePresetChange">
+          <el-radio-button label="23.50"></el-radio-button>
+          <el-radio-button label="23.51"></el-radio-button>
+          <el-radio-button label="23.52"></el-radio-button>
+          <el-radio-button label="23.53"></el-radio-button>
+          <el-radio-button label="23.54"></el-radio-button>
+          <el-radio-button label="23.57"></el-radio-button>
+        </el-radio-group>
+        <el-input disabled v-model="form.cron" placeholder="请输入cron表达式"></el-input>
         <p class="cron-desc">执行时间: {{ cronDesc }}</p>
       </el-form-item>
       <!-- 执行模式 normal -->
@@ -85,6 +99,19 @@ const emit = defineEmits<{
   (e: 'cancel'): void
 }>()
 
+const preset = ref<string>('');
+const handlePresetChange = (value: string): void => {
+  const currentDate = new Date();
+  const day = currentDate.getDate()
+
+  if (value != ''){
+    form.value.cron = value.substring(3,5) + ' 23 '+ day +' * *';
+  }
+  else {
+    form.value.cron = '56 23 '+ day +' * *'; // 其他情况下清空 form.cron
+  }
+}
+
 const ruleForm = ref<FormInstance>()
 const rules = ref<FormRules>({
   name: [
@@ -98,7 +125,7 @@ const rules = ref<FormRules>({
 
 const form = ref<CronTask>(_.cloneDeep(props.task) || {
   uid: getRandomId(),
-  mode: CronTaskMode.NORMAL,
+  mode: CronTaskMode.PRESET,
   type: MessageType.TEXT,
   name: '',
   receiver_ids: [],
@@ -114,6 +141,10 @@ const form = ref<CronTask>(_.cloneDeep(props.task) || {
 const cronDesc = computed(() => {
   try {
     if (form.value.mode === CronTaskMode.CUSTOM) {
+      if (!form.value.cron) return ''
+      return formatCron(form.value.cron)
+    }
+    if (form.value.mode === CronTaskMode.PRESET) {
       if (!form.value.cron) return ''
       return formatCron(form.value.cron)
     }
